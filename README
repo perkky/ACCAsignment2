@@ -1,0 +1,9 @@
+In order to compile the client:
+make -f makeclient
+In order to run the client:
+./client <ip/hostname> <port>
+
+In order to compile the server:
+make -f makeserver
+In order to run the server:
+./server n m wait_time
