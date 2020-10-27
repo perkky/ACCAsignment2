@@ -4,6 +4,7 @@
 #include <time.h>
 #include "serverApi.h"
 
+//Returns true if the userrname exists, otherwise false
 int usernameExists(Users* user, char* username)
 {
     while (user != NULL)
@@ -17,6 +18,7 @@ int usernameExists(Users* user, char* username)
     return 0;
 }
 
+//Returns true if the nickname exists, otherwise false
 int nickExists(Users* user, char* nick)
 {
     while (user != NULL)
@@ -30,6 +32,7 @@ int nickExists(Users* user, char* nick)
     return 0;
 }
 
+//Returns true if the socket number exists, otherwise false
 int socketExists(Users* user, int sockfd)
 {
     while (user != NULL)
@@ -43,6 +46,7 @@ int socketExists(Users* user, int sockfd)
     return 0;
 }
 
+//Adds a user to the Users struct
 void addUser(Users** users, char* username, char* name, char* hostname, int sockfd)
 {
     if (*users == NULL)
@@ -78,6 +82,7 @@ void addUser(Users** users, char* username, char* name, char* hostname, int sock
     pthread_mutex_init(&user->mutex, NULL);
 }
 
+//Removes a user to the Users struct based on their username
 void removeUserName(Users** users, char* username)
 {
     Users* prev = NULL;
@@ -103,6 +108,8 @@ void removeUserName(Users** users, char* username)
         user = user->next;
     }
 }
+
+//Removes a user to the Users struct based on their socket id
 void removeUserSock(Users** users, int sockfd)
 {
     Users* prev = NULL;
@@ -127,6 +134,7 @@ void removeUserSock(Users** users, int sockfd)
     }
 }
 
+//Broadcast a message to all other users
 void bcastMsgUsers(Users* users, char* username, char* message)
 {
     while (users != NULL)
@@ -143,6 +151,7 @@ void bcastMsgUsers(Users* users, char* username, char* message)
 
 }
 
+//get a sockid of a user with a specific username
 int getSockfdUsers(Users* users, char* username)
 {
     while (users != NULL)
@@ -156,6 +165,7 @@ int getSockfdUsers(Users* users, char* username)
     return -1;
 }
 
+//send message to a s pecific user with a specific username or nickname
 void sendMsgUsers(Users* users, char* username, char* message)
 {
     int sockfd = getSockfdUsers(users, username);
@@ -168,6 +178,7 @@ void sendMsgUsers(Users* users, char* username, char* message)
     pthread_mutex_unlock(&user->mutex);
 }
 
+//returns the nickname of a user with username
 void getNick(Users* users, char* username, char* nick)
 {
     while (users != NULL)
@@ -181,6 +192,7 @@ void getNick(Users* users, char* username, char* nick)
         users = users->next;
     }
 }
+
 
 void setNick(Users* users, char* username, char* nick)
 {
@@ -196,6 +208,8 @@ void setNick(Users* users, char* username, char* nick)
     }
 }
 
+//Returns the User struct of a user with the nickname.
+//Returns NULL if no user is found.
 Users* getUserNick(Users* users, char* nick)
 {
     while (users != NULL)
@@ -211,6 +225,7 @@ Users* getUserNick(Users* users, char* nick)
     return NULL;
 }
 
+//Frees all users memory
 void freeAllUsers(Users** users)
 {
     Users* prev = *users;

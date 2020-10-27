@@ -3,6 +3,8 @@
 #include "ACCSockets.h"
 #include <stdio.h>
 
+//Splits the string on the first space
+//If no space is found, second is set to an empty string
 void splitOnFirstSpace(char* str, char* first, char* second)
 {
     char* spaceLoc = strchr(str,' ');
@@ -23,6 +25,7 @@ int containsSpace(char* str)
     return (strchr(str,' ') != NULL);
 }
 
+//Gets input from the user
 void getInput(char* line, char* command, char* remaining)
 {
     splitOnFirstSpace(line, command, remaining);

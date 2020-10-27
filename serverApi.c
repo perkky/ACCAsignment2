@@ -10,6 +10,7 @@
 #include <malloc.h>
 #include <stdlib.h>
 
+//Gets the command from the user and returns a COMMAND Enum
 COMMAND getCommandFromClient(int sockfd)
 {
     char buffer[BUFFER_SIZE];
@@ -42,6 +43,7 @@ COMMAND getCommandFromClient(int sockfd)
 
 }
 
+//Cleans up and frees any memory
 void cleanUp(int sig)
 {
 	for(int i = 0; i < numThreads; i++) {
@@ -74,6 +76,8 @@ char* getTimeString()
 
 }
 
+//Splits the string on the first space
+//If no space is found, second is set to an empty string
 void splitOnFirstSpace(char* str, char* first, char* second)
 {
     char* spaceLoc = strchr(str,' ');
