@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
     SOCKET_WAIT_TIME = atoi(argv[3]);
     numServersAvailable = numThreads;
 
-    if (SOCKET_WAIT_TIME < 1 || SOCKET_WAIT_TIME > 1200 || numThreads < 1 || numNewThreads < 1)
+    if (SOCKET_WAIT_TIME < 1 || SOCKET_WAIT_TIME > 120 || numThreads < 1 || numNewThreads < 1)
     {
         printf("Error: n >1, m >1, 1 < wait_time < 120\n");
         return 1;
