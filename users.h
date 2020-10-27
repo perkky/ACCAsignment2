@@ -1,5 +1,6 @@
 #pragma once
 #define BUFFER_SIZE 256
+#include <pthread.h>
 
 typedef struct Users
 {
@@ -10,6 +11,7 @@ typedef struct Users
     char hostname[BUFFER_SIZE];
     int joinTime;
     struct Users* next;
+    pthread_mutex_t mutex;
 } Users;
 
 int usernameExists(Users* user, char* username);

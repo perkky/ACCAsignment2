@@ -71,7 +71,6 @@ int main(int argc, char* argv[])
     {
         pthread_cond_wait(&thread_cond, &thread_mutex);
  
-        printf("Singaled\n");
         numThreads += numNewThreads;
         numServersAvailable += numNewThreads;
 	    thread_handles = realloc(thread_handles, numThreads*sizeof(pthread_t));
@@ -95,7 +94,6 @@ void* Server_thread(void* listenfd)
 
     sockfd = listenForCon(*(int*)listenfd, returnIp);
 
-    printf("Connected\n");
 
     int exit = 0;
 
@@ -113,6 +111,8 @@ void* Server_thread(void* listenfd)
     struct timeval TIMEOUT;
     TIMEOUT.tv_sec = SOCKET_WAIT_TIME;
     sendMessage("Connected to server!", sockfd);
+
+    Users* currrentUser = NULL;
     while (!exit)
     {
         if (select(sockfd+1, &set, NULL, NULL, &TIMEOUT) <= 0)
@@ -128,14 +128,20 @@ void* Server_thread(void* listenfd)
         }
         else
         {
+            TIMEOUT.tv_sec = SOCKET_WAIT_TIME;
             if (isSocketClosed(sockfd))
                 break;
             //get commnad from user
             //timeout if needed
+
+            if (currrentUser != NULL)
+                pthread_mutex_lock(&currrentUser->mutex);
+
             switch (getCommandFromClient(sockfd))
             {
                 case JOIN:
                     joinServer(sockfd, username, hostname, &g_users);
+                    currrentUser = getUserNick(g_users, username);
                     break;
                 case NICK:
                     nickServer(sockfd, username, g_users);
@@ -145,7 +151,6 @@ void* Server_thread(void* listenfd)
 
                     break;
                 case WHOIS:
-                    printf("jdsfl\n");
                     whoisServer(sockfd, g_users);
 
                     break;
@@ -170,12 +175,13 @@ void* Server_thread(void* listenfd)
                     break;
 
             }
+            if (currrentUser != NULL)
+                pthread_mutex_unlock(&currrentUser->mutex);
         }
         
 
     }
 
-    printf("Thread finished\n");
     close(sockfd);
 
     return NULL;

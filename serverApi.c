@@ -93,7 +93,6 @@ ReturnVal joinServer(int sockfd, char* inUsername, char* hostname, Users** users
     char message[BUFFER_SIZE];
     recieveMessage(message, sockfd);
 
-    printf("in join\n");
 
     char username[BUFFER_SIZE], name[BUFFER_SIZE];
     splitOnFirstSpace(message, username, name);
@@ -117,7 +116,7 @@ ReturnVal joinServer(int sockfd, char* inUsername, char* hostname, Users** users
         else
         {
             strcpy(inUsername, username);
-            sprintf(sendMsg,"SERVER: JOIN %s - %s", username, name);
+            sprintf(sendMsg,"SERVER: JOIN %s - %s - %s", username, name, hostname);
             addUser(users, username, name, hostname, sockfd);
         }
         pthread_mutex_unlock(&user_mutex);
@@ -143,7 +142,6 @@ ReturnVal nickServer(int sockfd, char* inUsername, Users* user)
     }
     else if (!nickExists(user, nick))
     {
-        printf("%s\n", nick);
         char oldNick[BUFFER_SIZE];
         getNick(user, inUsername, oldNick);
         setNick(user, inUsername, nick);
@@ -159,7 +157,6 @@ ReturnVal nickServer(int sockfd, char* inUsername, Users* user)
     }
     pthread_mutex_unlock(&user_mutex);
 
-    printf("%s\n", message);
     sendMessage(message, sockfd);
 
     return SUCCESS;

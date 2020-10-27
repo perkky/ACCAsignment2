@@ -55,6 +55,7 @@ void addUser(Users** users, char* username, char* name, char* hostname, int sock
         (*users)->joinTime = (int)getTime();
         (*users)->sockfd = sockfd;
         (*users)->next = NULL;
+        pthread_mutex_init(&(*users)->mutex, NULL);
 
         return;
     }
@@ -74,6 +75,7 @@ void addUser(Users** users, char* username, char* name, char* hostname, int sock
     user->joinTime = (int)getTime();
     user->sockfd = sockfd;
     user->next = NULL;
+    pthread_mutex_init(&user->mutex, NULL);
 }
 
 void removeUserName(Users** users, char* username)
@@ -130,7 +132,11 @@ void bcastMsgUsers(Users* users, char* username, char* message)
     while (users != NULL)
     {
         if (strcmp(username, users->username) !=0)
+        {
+            pthread_mutex_unlock(&users->mutex);
             sendMessage(message, users->sockfd);
+            pthread_mutex_unlock(&users->mutex);
+        }
 
         users = users->next;
     }
@@ -153,15 +159,20 @@ int getSockfdUsers(Users* users, char* username)
 void sendMsgUsers(Users* users, char* username, char* message)
 {
     int sockfd = getSockfdUsers(users, username);
+    char nick[BUFFER_SIZE];
+    getNick(users, username, nick);
+    Users* user = getUserNick(users, nick);
 
+    pthread_mutex_lock(&user->mutex);
     sendMessage(message, sockfd);
+    pthread_mutex_unlock(&user->mutex);
 }
 
 void getNick(Users* users, char* username, char* nick)
 {
     while (users != NULL)
     {
-        if (strcmp(username, users->username) == 0)
+        if (strcmp(username, users->username) == 0 || strcmp(username, users->nick) == 0)
         {
             strcpy(nick, users->nick);
             return;
